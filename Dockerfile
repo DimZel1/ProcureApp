@@ -23,10 +23,13 @@ FROM node:20-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-# OpenSSL for Prisma migration/runtime
+# Tell the app to bind exactly where DO is probing
+ENV PORT=3000
+ENV HOST=0.0.0.0
+
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
-# Copy runtime assets
+# Copy only what the standalone server needs
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/.next/standalone ./
